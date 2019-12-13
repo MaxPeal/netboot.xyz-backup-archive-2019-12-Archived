@@ -69,7 +69,7 @@ Full documentation is at netboot.xyz:
 
 #### Utilities
 
-* [AVG Rescue CD](https://www.avg.com/en-ww/download.prd-arl.)
+* [AVG Rescue CD](http://www.avg.com/us-en/avg-rescue-cd)
 * [Breakin](http://www.advancedclustering.com/products/software/breakin/)
 * [Clonezilla](http://www.clonezilla.org/)
 * [DBAN](http://www.dban.org/)

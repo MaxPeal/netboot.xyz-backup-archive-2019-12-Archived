@@ -9,13 +9,14 @@ goto ${menu}
 set os Debian
 clear debian_version
 clear older_release
+set debian_mirror ${mirror}
 menu ${os} - ${arch_a} - Image Sig Checks: [${img_sigs_enabled}]
 item --gap Latest Releases
-item buster ${space} ${os} 10.0 (buster)
 item stretch ${space} ${os} 9.0 (stretch)
 item jessie ${space} ${os} 8.0 (jessie)
+item wheezy ${space} ${os} 7.0 (wheezy)
 item --gap Testing Releases
-item bullseye ${space} ${os} bullseye (testing)
+item buster ${space} ${os} buster (testing)
 item sid ${space} ${os} sid (unstable) 
 item --gap Older Releases
 item older_release ${space} Set release codename...
@@ -29,12 +30,12 @@ set debian_mirror archive.debian.org
 echo Setting mirror to ${debian_mirror}
 clear debian_version
 echo -n Please set enter code name of release: ${} && read debian_version
-set dir ${debian_base_dir}/dists/${debian_version}/main/installer-${arch_a}/current/images/netboot/
+set dir debian/dists/${debian_version}/main/installer-${arch_a}/current/images/netboot/
 goto deb_boot_type
 
 :mirrorcfg
 set mirrorcfg mirror/suite=${debian_version}
-set dir ${debian_base_dir}/dists/${debian_version}/main/installer-${arch_a}/current/images/netboot/
+set dir debian/dists/${debian_version}/main/installer-${arch_a}/current/images/netboot/
 goto deb_boot_type
 
 :deb_boot_type
@@ -75,7 +76,7 @@ goto deb_boot
 :deb_boot
 imgfree
 echo Boot parameters: ${install_params} -- quiet ${params}
-kernel http://${debian_mirror}/${dir}/linux ${install_params} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
+kernel http://${debian_mirror}/${dir}/linux ${install_params} ${netcfg} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
 initrd http://${debian_mirror}/${dir}/initrd.gz
 echo
 echo MD5sums:

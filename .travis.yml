@@ -1,12 +1,12 @@
 sudo: true
-dist: xenial
+dist: trusty
 language: c
 before_install:
 - openssl aes-256-cbc -K $encrypted_7d306b01dc1f_key -iv $encrypted_7d306b01dc1f_iv -in script/secrets.tar.enc -out script/secrets.tar -d
 - tar xvf script/secrets.tar -C script/
 - sudo apt-get update -qq
-- sudo apt-get install -qq binutils-dev binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu genisoimage liblzma-dev syslinux syslinux-common isolinux
-- sudo pip install awscli tornado
+- sudo apt-get install -qq binutils-dev genisoimage liblzma-dev syslinux
+- sudo pip install mkdocs mkdocs-bootswatch awscli
 script:
 - "./script/prep-release.sh"
 deploy:
@@ -18,6 +18,18 @@ deploy:
     skip_cleanup: true
     on:
       repo: antonym/netboot.xyz
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: $BUCKET_SITE
+    local_dir: site
+    skip_cleanup: true
+    on:
+      repo: antonym/netboot.xyz
 after_deploy:
   - aws configure set preview.cloudfront true
   - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID_BOOT --paths "/*"
+  - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID_SITE --paths "/*"
+notifications:
+  email:
+    - antony@mes.ser.li

@@ -1,19 +1,19 @@
 #!ipxe
 
 # Ubuntu Operating System
-# https://www.ubuntu.com
+# http://www.ubuntu.org
 
 goto ${menu}
 
 :ubuntu
 set os Ubuntu
 clear ubuntu_version
+set ubuntu_mirror ${mirror}
 menu ${os} - ${arch_a} - Image Sig Checks: [${img_sigs_enabled}]
 item --gap Latest Releases
-iseq ${arch_a} amd64 && item eoan ${space} ${os} 19.10 Eoan Ermine ||
-item disco ${space} ${os} 19.04 Disco Dingo
-item bionic ${space} ${os} 18.04 LTS Bionic Beaver
+item zesty ${space} ${os} 17.04 Zesty Zapus
 item xenial ${space} ${os} 16.04 LTS Xenial Xerus
+item trusty ${space} ${os} 14.04 LTS Trusty Tahr
 item --gap Older Releases
 item older_release ${space} Set release codename...
 choose ubuntu_version || goto ubuntu_exit
@@ -26,14 +26,12 @@ set ubuntu_mirror old-releases.ubuntu.com
 echo Setting mirror to ${ubuntu_mirror}
 clear ubuntu_version
 echo -n Please set enter code name of release: ${} && read ubuntu_version
-set dir ${ubuntu_base_dir}/dists/${ubuntu_version}-updates/main/installer-${arch_a}/current/images/netboot/
+set dir ubuntu/dists/${ubuntu_version}/main/installer-${arch_a}/current/images/netboot/
 goto deb_boot_type
 
 :mirrorcfg
 set mirrorcfg mirror/suite=${ubuntu_version}
-set dir ${ubuntu_base_dir}/dists/${ubuntu_version}-updates/main/installer-${arch_a}/current/images/netboot/
-iseq ${ubuntu_version} eoan && set dir ${ubuntu_base_dir}/dists/${ubuntu_version}/main/installer-${arch_a}/current/images/netboot/ ||
-
+set dir ubuntu/dists/${ubuntu_version}/main/installer-${arch_a}/current/images/netboot/
 
 :deb_boot_type
 menu ${os} [${ubuntu_version}] Installer
@@ -63,7 +61,7 @@ goto deb_boot
 :deb_boot
 set dir ${dir}${menu}-installer/${arch_a}
 imgfree
-kernel http://${ubuntu_mirror}/${dir}/linux ${install_params} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
+kernel http://${ubuntu_mirror}/${dir}/linux ${install_params} ${netcfg} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
 initrd http://${ubuntu_mirror}/${dir}/initrd.gz
 echo
 echo MD5sums:

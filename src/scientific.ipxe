@@ -3,19 +3,16 @@
 # Scientific Linux Operating System
 # https://www.scientificlinux.org/
 
-isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
-set ipparam BOOTIF=${netX/mac} ${ipparam}
-
 goto ${menu} ||
 
 :scientific
 clear osversion
-set os Scientific Linux
+set os Scientific
 menu ${os} ${arch}
-item 7.7 ${os} 7.7
-item 7.6 ${os} 7.6
-item 6.10 ${os} 6.10
-item 6.9 ${os} 6.9
+item 7.2 ${os} 7.2
+item 7.1 ${os} 7.1
+item 7.0 ${os} 7.0
+item 6.7 ${os} 6.7
 item other Choose other version [o]
 isset ${osversion} || choose osversion || goto linux_menu
 iseq ${osversion} other || goto scientific_skip_read_osversion
@@ -50,7 +47,7 @@ goto bootos_images
 
 :bootos_images
 imgfree
-kernel http://ftp1.scientificlinux.org/${dir}/images/pxeboot/vmlinuz repo=${repo} ${params} ${console} ${ipparam}
+kernel http://ftp1.scientificlinux.org/${dir}/images/pxeboot/vmlinuz repo=${repo} ${params} ${netcfg} ${console}
 initrd http://ftp1.scientificlinux.org/${dir}/images/pxeboot/initrd.img
 boot
 goto linux_menu

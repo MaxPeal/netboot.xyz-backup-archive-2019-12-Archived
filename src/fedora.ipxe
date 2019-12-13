@@ -1,10 +1,7 @@
 #!ipxe
 
 # Fedora Operating System
-# https://getfedora.org/
-
-isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
-set ipparam BOOTIF=${netX/mac} ${ipparam}
+# http://wwww.fedora.org
 
 goto ${menu} ||
 
@@ -15,10 +12,9 @@ clear ova
 set os Fedora
 menu Fedora - ${arch} - Image Sig Checks: [${img_sigs_enabled}]
 item --gap Latest Releases
-item 31 ${space} ${os} 31
-item 30 ${space} ${os} 30
-item 29 ${space} ${os} 29
-iseq ${arch} x86_64 && item rawhide ${space} ${os} rawhide ||
+item 26 ${space} ${os} 26
+item 25 ${space} ${os} 25
+item 24 ${space} ${os} 24
 isset ${osversion} || choose osversion || goto linux_menu
 set ova ${os} ${osversion}
 goto product_sku
@@ -28,12 +24,8 @@ menu ${os} ${arch} sku type
 item Everything ${ova} Everything
 item Server ${ova} Server
 item Workstation ${ova} Workstation
-item Atomic ${ova} Atomic
-iseq ${arch} x86_64 && item Silverblue ${ova} Silverblue ||
 isset ${sku_type} || choose sku_type || goto fedora
-set dir ${fedora_base_dir}/releases/${osversion}/${sku_type}/${arch}/os
-iseq ${osversion} rawhide && set dir ${fedora_base_dir}/development/${osversion}/${sku_type}/${arch}/os ||
-iseq ${sku_type} Atomic && iseq ${osversion} 29 && set dir fedora-alt/atomic/stable/Fedora-Atomic-29-20181025.1/AtomicHost/x86_64/os ||
+set dir fedora/releases/${osversion}/${sku_type}/${arch}/os
 set ova ${ova} ${sku_type}
 echo ${cls}
 goto boottype
@@ -60,12 +52,11 @@ goto boot
 
 :boot
 imgfree
-kernel http://${fedora_mirror}/${dir}/images/pxeboot/vmlinuz repo=http://${fedora_mirror}/${dir} ${params} ${console} ${ipparam} initrd=initrd.img
-initrd http://${fedora_mirror}/${dir}/images/pxeboot/initrd.img
+kernel http://${mirror}/${dir}/images/pxeboot/vmlinuz repo=http://${mirror}/${dir} ${params} ${console} initrd=initrd.img
+initrd http://${mirror}/${dir}/images/pxeboot/initrd.img
 echo
 echo MD5sums:
 md5sum vmlinuz initrd.img
-iseq ${osversion} rawhide && goto skip_sigs ||
 iseq ${img_sigs_enabled} true && goto verify_sigs || goto skip_sigs
 :verify_sigs
 echo

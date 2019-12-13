@@ -9,18 +9,19 @@ goto ${menu}
 set os Devuan
 clear devuan_version
 clear older_release
+set devuan_mirror auto.mirror.devuan.org
 menu ${os} - ${arch_a} - Image Sig Checks: [${img_sigs_enabled}]
 item --gap Latest Releases
-item ascii ${space} ${os} ascii (stable)
 item jessie ${space} ${os} 1.0 (jessie)
 item --gap Testing Releases
-item beowulf ${space} ${os} beowulf (testing)
+item stretch ${space} ${os} ascii (testing)
+item sid ${space} ${os} ceres (unstable) 
 choose devuan_version || goto devuan_exit
 goto mirrorcfg
 
 :mirrorcfg
 set mirrorcfg mirror/suite=${devuan_version}
-set dir ${devuan_base_dir}/dists/${devuan_version}/main/installer-${arch_a}/current/images/netboot/
+set dir devuan/dists/${devuan_version}/main/installer-${arch_a}/current/images/netboot/
 goto devuan_boot_type
 
 :devuan_boot_type
@@ -61,7 +62,7 @@ goto devuan_boot
 :devuan_boot
 imgfree
 echo Boot parameters: ${install_params} -- quiet ${params}
-kernel http://${devuan_mirror}/${dir}/linux ${install_params} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
+kernel http://${devuan_mirror}/${dir}/linux ${install_params} ${netcfg} ${mirrorcfg} ${console} -- quiet ${params} initrd=initrd.gz
 initrd http://${devuan_mirror}/${dir}/initrd.gz
 echo
 echo MD5sums:

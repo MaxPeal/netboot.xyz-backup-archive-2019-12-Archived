@@ -3,19 +3,6 @@
 # Arch Linux Operating System
 # http://www.archlinux.org
 
-isset ${dhcp-server} || goto static_ip
-set ipparam BOOTIF=${netX/mac} ip=dhcp
-set real_archlinux_mirror ${archlinux_mirror}
-goto goto_menu
-
-:static_ip
-# Arch Linux cannot use DNS if booted with a static IP
-# See https://bugs.archlinux.org/task/63174
-# Remove this hack when the above bug is properly resolved
-nslookup real_archlinux_mirror ${archlinux_mirror}
-set ipparam BOOTIF=${netX/mac} ip=${ip}::${gateway}:${netmask}
-
-:goto_menu
 goto ${menu} ||
 
 :archlinux
@@ -24,16 +11,19 @@ clear arch_version
 menu ${os} - ${arch} - Image Sig Checks: [${img_sigs_enabled}]
 menu Arch Linux
 item --gap Latest Releases
-item 2019.12.01 2019.12.01
+item 2017.09.01 2017.09.01
+item 2017.08.01 2017.08.01
+item 2017.07.01 2017.07.01
 choose arch_version || goto archlinux_exit
 goto boot
 
 :boot
 imgfree
-set dir ${archlinux_base_dir}/iso/${arch_version}/arch/boot
-set params initrd=archiso.img archiso_http_srv=http://${real_archlinux_mirror}/${archlinux_base_dir}/iso/${arch_version}/ archisobasedir=arch verify=y ${ipparam} net.ifnames=0 ${console}
-kernel http://${archlinux_mirror}/${dir}/x86_64/vmlinuz ${params} initrd=archiso.img
-initrd http://${archlinux_mirror}/${dir}/x86_64/archiso.img
+iseq ${arch} i386 && set bootarch i686 || set bootarch x86_64
+set dir archlinux/iso/${arch_version}/arch/boot
+set params initrd=archiso.img archiso_http_srv=http://${mirror}/archlinux/iso/${arch_version}/ archisobasedir=arch verify=y ip=dhcp net.ifnames=0 ${console}
+kernel http://${mirror}/${dir}/${bootarch}/vmlinuz ${params} initrd=archiso.img
+initrd http://${mirror}/${dir}/${bootarch}/archiso.img
 echo
 echo MD5sums:
 md5sum vmlinuz archiso.img
@@ -41,8 +31,8 @@ iseq ${img_sigs_enabled} true && goto verify_sigs || goto skip_sigs
 :verify_sigs
 echo
 echo Checking signatures...
-imgverify vmlinuz ${sigs}${dir}/x86_64/vmlinuz.sig || goto error
-imgverify archiso.img ${sigs}${dir}/x86_64/archiso.img.sig || goto error
+imgverify vmlinuz ${sigs}${dir}/${bootarch}/vmlinuz.sig || goto error
+imgverify archiso.img ${sigs}${dir}/${bootarch}/archiso.img.sig || goto error
 echo Signatures verified!
 echo
 :skip_sigs

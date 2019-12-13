@@ -3,23 +3,20 @@
 # CentOS Operating System
 # http://www.centos.org
 
-isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
-set ipparam BOOTIF=${netX/mac} ${ipparam}
-
 goto ${menu} ||
 
 :centos
 clear osversion
 set os CentOS
+set ksdevice eth0
 menu ${os} - ${arch} - Image Sig Checks: [${img_sigs_enabled}]
-item 8.0.1905 ${os} 8.0
-item 8-stream ${os} 8.0 Stream
-item 7.7.1908 ${os} 7.7
+item 7.4.1708 ${os} 7.4
+item 6.9 ${os} 6.9
 isset ${osversion} || choose osversion || goto linux_menu
 echo ${cls}
-set dir ${centos_base_dir}/${osversion}/BaseOS/${arch}/os
-iseq ${osversion} 7.7.1908 && set dir ${centos_base_dir}/${osversion}/os/${arch} ||
-set repo http://${centos_mirror}/${dir}
+iseq ${osversion} 6.9 && set dir ${menu}/${osversion}/os/${arch} ||
+set dir ${menu}/${osversion}/os/x86_64
+set repo http://${mirror}/${dir}
 goto boottype
 
 :boottype
@@ -48,7 +45,7 @@ goto bootos_images
 
 :kickstart
 echo -n Specify kickstart URL for ${os} ${osversion}: && read ksurl
-set params ks=${ksurl} ||
+set params ks=${ksurl} ksdevice=${ksdevice} ||
 clear bt
 goto boottype
 
@@ -60,12 +57,11 @@ goto boottype
 
 :bootos_images
 imgfree
-kernel http://${centos_mirror}/${dir}/images/pxeboot/vmlinuz repo=${repo} ${params} ${console} ${ipparam} initrd=initrd.img
-initrd http://${centos_mirror}/${dir}/images/pxeboot/initrd.img
+kernel http://${mirror}/${dir}/images/pxeboot/vmlinuz repo=${repo} ${params} ${netcfg} ${console} initrd=initrd.img
+initrd http://${mirror}/${dir}/images/pxeboot/initrd.img
 echo
 echo MD5sums:
 md5sum vmlinuz initrd.img
-iseq ${osversion} 8-stream && echo Rolling release, skipping sig checks && goto skip_sigs ||
 iseq ${img_sigs_enabled} true && goto verify_sigs || goto skip_sigs
 :verify_sigs
 echo

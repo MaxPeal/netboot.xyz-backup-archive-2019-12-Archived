@@ -1,7 +1,7 @@
 #!ipxe
 
 # Fedora Operating System
-# https://getfedora.org/
+# http://wwww.fedora.org
 
 goto ${menu} ||
 

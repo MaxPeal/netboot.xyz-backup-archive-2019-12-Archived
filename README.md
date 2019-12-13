@@ -37,6 +37,7 @@ Full documentation is at netboot.xyz:
 ### What Operating Systems are available?
 
 * [Alpine Linux](https://alpinelinux.org)
+* [Antergos](https://antergos.com)
 * [Arch Linux](https://www.archlinux.org)
 * [CentOS](https://centos.org)
 * [CoreOS Container Linux](https://coreos.com/)
